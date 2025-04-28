@@ -1,0 +1,70 @@
+---
+title: "Final Project"
+subtitle: "STAT 230 Spring 2025"
+author: "Keziah White"
+format:
+  html:
+    embed-resources: true
+---
+
+# Data and Questions
+
+This data set from https://catalog.data.gov/dataset/popular-baby-namesshows provides information on baby names in the United States, including the name, gender, year of birth, and the number of occurrences for each name. It allows analysis of naming trends and the popularity of specific names over time, across different genders, and by state.
+
+Some questions we can answer with this data:
+
+1.For each baby name, how has its popularity varied across all years, genders, and ethnicities?"
+
+2.Is there a significant difference in the average number of babies given a particular name across different ethnicities?
+
+```{r}
+library(tidyverse)
+Baby_Names <- read_csv("~/STAT230/STAT230/Popular_Baby_Names.csv")
+```
+#Histogram
+```{r}
+Baby_Names |>
+  ggplot(aes(x = `Count`)) + 
+  geom_histogram()
+```
+
+
+
+#Boxplot
+```{r}
+Baby_Names |>
+  ggplot(aes(x = `Rank`, y = `Gender`)) + 
+  geom_boxplot()
+```
+
+#Mean,Standard Deviation, Mnimum and Maximum
+
+```{r}
+Baby_Names |>
+  group_by(`Child's First Name`) |>
+  summarize(mean = mean(Count, na.rm = TRUE),
+            min = min(Count, na.rm = TRUE),
+            max = max(Count, na.rm = TRUE),
+            sd = sd(Count, na.rm = TRUE)) |>
+  mutate(range = max - min)
+```
+#Sample t-test
+```{r}
+Two_Names <- Baby_Names |>
+  filter(`Child's First Name` %in% c("SOPHIA", "Victor"))
+t.test(Count ~ `Child's First Name`, data = Two_Names)
+```
+#ANOVA
+```{r}
+name_data <-Baby_Names |>
+  filter(`Child's First Name` == "Michael")
+
+anova <- aov(Count ~ Ethnicity, data = name_data)
+summary(anova)
+```
+
+CONCLUSION:
+For this project, I looked at trends in baby name popularity using a dataset from Data.gov. I started by making a histogram to see how often different names were used, and it showed that most names aren't super common, but a few are really popular. I also made a boxplot to compare the ranks of names by gender, which gave a nice visual of how boys' and girls' names are ranked differently. Then I calculated some basic stats — the mean, minimum, maximum, standard deviation, and range — for each name to see how much their popularity changed over time.
+
+After that, I ran a t-test comparing the number of babies named "SOPHIA" versus "Victor" to see if there was a real difference between how popular those names were. I also did an ANOVA test to check if the name "Michael" was used differently across different ethnic groups. These tests helped me figure out if popularity differences were actually meaningful or just random. Overall, this analysis gave me a better understanding of naming trends and how names can vary depending on things like gender and ethnicity.
+
